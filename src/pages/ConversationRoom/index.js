@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import Button from 'react-bootstrap/Button';
 import { useParams } from 'react-router-dom';
 
-const socket = io('ws://localhost:8080');
+const socket = io('ws://192.168.179.107:8080');
 
 
 
@@ -33,6 +33,7 @@ export default function ConversationRoom() {
         return () => {
             socket.off('connect');
             socket.off('disconnect');
+            socket.off('message');
         };
     }, []);
 
@@ -56,40 +57,9 @@ export default function ConversationRoom() {
                 style={{overflow: 'auto', marginBottom: '80px', flexDirection: 'column-reverse'}}>
 
                 {
-                    messages.map(msg => msg.username === username ? <MessageOwnerBox msg={msg}/> : <MessageReceivedBox msg={msg}/>)
+                    messages.map((msg, index) => msg.username === username ? <MessageOwnerBox key={index} msg={msg}/> : <MessageReceivedBox key={index} msg={msg}/>)
                 }
-                    {/* <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/>
-                    <MessageOwnerBox/>
-                    <MessageReceivedBox/> */}
-
-             
+              
                 <div className='d-flex position-fixed bottom-0 border w-50 py-3 px-3' style={{marginTop: '100px'}}>
                     <Form.Control
                         value={message}
@@ -108,8 +78,8 @@ export default function ConversationRoom() {
 
 function MessageOwnerBox({ msg }){
     return (
-        <div className='d-flex flex-column align-items-end px-3'>
-        <div style={{fontSize: '0.7em'}}>{msg.username} 18/10/2022 15:35</div>
+        <div className='d-flex flex-column align-items-end px-3 my-1'>
+        <div style={{fontSize: '0.7em'}}>{msg.username} {msg.createdAt}</div>
         <div 
             style={{
                 background: '#8cbcff',
@@ -125,8 +95,8 @@ function MessageOwnerBox({ msg }){
 
 function MessageReceivedBox({ msg }){
     return (
-        <div className='d-flex flex-column align-items-start px-3'>
-            <div style={{fontSize: '0.7em'}}>{ msg.username } 18/10/2022 15:35</div>
+        <div className='d-flex flex-column align-items-start px-3 my-1'>
+            <div style={{fontSize: '0.7em'}}>{ msg.username } {msg.createdAt}</div>
             <div 
                 style={{
                     background: '#d4d4d4',
