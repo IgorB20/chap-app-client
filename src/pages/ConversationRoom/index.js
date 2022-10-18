@@ -76,10 +76,21 @@ export default function ConversationRoom() {
     );
 }
 
+function formatDate(date){
+    
+    const dd = date.getDate();
+    const mm = date.getMonth()+1;
+    const yyyy = date.getFullYear(); 
+    const hh = date.getHours();
+    const minutes = date.getMinutes();
+
+    return `${dd}/${mm}/${yyyy} ${hh}:${minutes}`
+}
+
 function MessageOwnerBox({ msg }){
     return (
         <div className='d-flex flex-column align-items-end px-3 my-1'>
-        <div style={{fontSize: '0.7em'}}>{msg.username} {msg.createdAt}</div>
+        <div style={{fontSize: '0.7em'}}>{msg.username} {formatDate(new Date(msg.createdAt))}</div>
         <div 
             style={{
                 background: '#8cbcff',
@@ -96,7 +107,7 @@ function MessageOwnerBox({ msg }){
 function MessageReceivedBox({ msg }){
     return (
         <div className='d-flex flex-column align-items-start px-3 my-1'>
-            <div style={{fontSize: '0.7em'}}>{ msg.username } {msg.createdAt}</div>
+            <div style={{fontSize: '0.7em'}}>{ msg.username } {formatDate(new Date(msg.createdAt))}</div>
             <div 
                 style={{
                     background: '#d4d4d4',
