@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import Button from 'react-bootstrap/Button';
 import { useParams } from 'react-router-dom';
 
-const socket = io('ws://192.168.179.107:8080');
+const socket = io('ws://localhost:8080');
 
 
 
@@ -13,8 +13,11 @@ export default function ConversationRoom() {
     const [isConnected, setIsConnected] = useState(socket.connected);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [browserTabIsActive, setBrowserTabIsActive] = useState(true);
 
     const { username } = useParams();
+
+    console.log(browserTabIsActive)
 
     useEffect(() => {
         socket.on('connect', () => {
@@ -25,10 +28,21 @@ export default function ConversationRoom() {
             setIsConnected(false);
         });
 
-        socket.on('message', (msg) => {
-            console.log("Mensagem recebida do servidor! -->", msg);
-            setMessages(msgs => [msg, ...msgs]);
-        })
+        socket.on('message', (messages) => {
+            console.log("Mensagem recebida do servidor! -->", messages);
+            setMessages(messages.reverse());
+        });
+
+
+        document.addEventListener('visibilitychange', function (event) {
+            if (document.hidden) {
+                console.log('not visible');
+                setBrowserTabIsActive(false);
+            } else {
+                console.log('is visible');
+                setBrowserTabIsActive(true);
+            }
+        });
 
         return () => {
             socket.off('connect');
@@ -36,6 +50,10 @@ export default function ConversationRoom() {
             socket.off('message');
         };
     }, []);
+
+    useEffect(()=>{
+        if(browserTabIsActive) setReadedFlag();
+    }, [browserTabIsActive])
 
     function handleInputChange(ev){
         setMessage(ev.target.value);
@@ -47,6 +65,10 @@ export default function ConversationRoom() {
             message
         });
         setMessage('');
+    }
+
+    function setReadedFlag(){
+        socket.emit('read', '');
     }
 
     return (
@@ -100,6 +122,9 @@ function MessageOwnerBox({ msg }){
         >
             {msg.message}
         </div>
+        <div
+            style={{fontSize: '0.7em'}}
+        >{ msg.readed ? 'lida' : 'não lida' }</div>
     </div>
     );
 }
