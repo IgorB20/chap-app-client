@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import Button from 'react-bootstrap/Button';
 import { useParams } from 'react-router-dom';
 
-const socket = io('ws://localhost:8080');
+const socket = io('ws://10.0.0.104:8080');
 
 
 
@@ -17,7 +17,7 @@ export default function ConversationRoom() {
 
     const { username } = useParams();
 
-    console.log(browserTabIsActive)
+    console.log("aqui", browserTabIsActive)
 
     useEffect(() => {
         socket.on('connect', () => {
@@ -29,18 +29,37 @@ export default function ConversationRoom() {
         });
 
         socket.on('message', (messages) => {
-            console.log("Mensagem recebida do servidor! -->", messages);
+            // console.log("Mensagem recebida do servidor! -->", messages);
             setMessages(messages.reverse());
+
+            if(messages.length > 0 && document.hidden === false){
+                if(messages[0].username !== username && messages[0].readed === false) {
+                    console.log('oi')  
+                setReadedFlag()
+                }
+            }
+            // console.log(messages[messages.length - 1])
+            // if(messages.length > 0){
+             
+            //     const lastMessage = messages[0];
+            //     // console.log("aquiii", lastMessage)
+            //     // if(browserTabIsActive && lastMessage.username !== username && lastMessage.readed === false){
+            //     //     // console.log("bateu aqui")
+            //     //     setReadedFlag();
+            //     // } 
+            // }
+             
         });
 
 
         document.addEventListener('visibilitychange', function (event) {
             if (document.hidden) {
-                console.log('not visible');
+                document.title = 'hidden';
                 setBrowserTabIsActive(false);
             } else {
-                console.log('is visible');
+                document.title = 'not hidden';
                 setBrowserTabIsActive(true);
+         
             }
         });
 
@@ -52,7 +71,14 @@ export default function ConversationRoom() {
     }, []);
 
     useEffect(()=>{
-        if(browserTabIsActive) setReadedFlag();
+        // console.log(messages[0]);
+        console.log(messages)
+        if(messages.length > 0){
+            if(messages[0].username !== username && messages[0].readed === false) {
+                console.log('oi')  
+            setReadedFlag()
+            }
+        }
     }, [browserTabIsActive])
 
     function handleInputChange(ev){
@@ -68,6 +94,7 @@ export default function ConversationRoom() {
     }
 
     function setReadedFlag(){
+        // console.log("setting readed")
         socket.emit('read', '');
     }
 
