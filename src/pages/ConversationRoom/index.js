@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import Button from 'react-bootstrap/Button';
 import { useParams } from 'react-router-dom';
 
-const socket = io('ws://10.0.0.104:8080');
+const socket = io('ws://192.168.135.107:8080');
 
 
 
@@ -17,7 +17,6 @@ export default function ConversationRoom() {
 
     const { username } = useParams();
 
-    console.log("aqui", browserTabIsActive)
 
     useEffect(() => {
         socket.on('connect', () => {
@@ -34,21 +33,9 @@ export default function ConversationRoom() {
 
             if(messages.length > 0 && document.hidden === false){
                 if(messages[0].username !== username && messages[0].readed === false) {
-                    console.log('oi')  
-                setReadedFlag()
+                    setReadedFlag()
                 }
-            }
-            // console.log(messages[messages.length - 1])
-            // if(messages.length > 0){
-             
-            //     const lastMessage = messages[0];
-            //     // console.log("aquiii", lastMessage)
-            //     // if(browserTabIsActive && lastMessage.username !== username && lastMessage.readed === false){
-            //     //     // console.log("bateu aqui")
-            //     //     setReadedFlag();
-            //     // } 
-            // }
-             
+            }          
         });
 
 
@@ -71,12 +58,10 @@ export default function ConversationRoom() {
     }, []);
 
     useEffect(()=>{
-        // console.log(messages[0]);
         console.log(messages)
         if(messages.length > 0){
             if(messages[0].username !== username && messages[0].readed === false) {
-                console.log('oi')  
-            setReadedFlag()
+                setReadedFlag()
             }
         }
     }, [browserTabIsActive])
@@ -94,7 +79,6 @@ export default function ConversationRoom() {
     }
 
     function setReadedFlag(){
-        // console.log("setting readed")
         socket.emit('read', '');
     }
 
